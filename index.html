@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前额叶功能快速测试</title>
+    <style>
+        :root {
+            --bg: #f5f3f0;
+            --card-bg: #ffffff;
+            --text: #2c2416;
+            --text-light: #6b5e4a;
+            --primary: #5b7b94;
+            --primary-light: #e8f0f6;
+            --accent: #c08261;
+            --success: #6b9b6f;
+            --error: #c75b5b;
+            --gold: #c4973b;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.10), 0 4px 12px rgba(0, 0, 0, 0.05);
+            --radius-sm: 10px;
+            --radius: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+            --font-sans: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --bounce: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: linear-gradient(160deg, #f0ece6 0%, #f7f4ef 30%, #efeae2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -120px;
+            right: -80px;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(91, 123, 148, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -100px;
+            left: -60px;
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(192, 130, 97, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            padding: 28px 24px 24px;
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #c4973b22, #5b7b9433, #c0826130, #5b7b9433, #c4973b22);
+            opacity: 0.7;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeSlideIn 0.4s ease;
+        }
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.85); opacity: 0; }
+            70% { transform: scale(1.04); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+        @keyframes scoreCountUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.8); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(196, 151, 59, 0.4); }
+            50% { box-shadow: 0 0 0 18px rgba(196, 151, 59, 0); }
+        }
+
+        .header-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e8f0f6, #dce8f2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 12px;
+            animation: popIn 0.5s var(--bounce);
+        }
+        .title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.01em;
+            margin-bottom: 4px;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 13px 28px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition);
+            letter-spacing: 0.01em;
+            font-family: var(--font-sans);
+            position: relative;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            white-space: nowrap;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(91, 123, 148, 0.3);
+        }
+        .btn-primary:hover {
+            background: #4e6d83;
+            box-shadow: 0 6px 20px rgba(91, 123, 148, 0.4);
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            background: #fff;
+            color: var(--primary);
+            border: 2px solid #dce5ec;
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .btn-lg {
+            padding: 15px 36px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+        }
+        .btn-block { width: 100%; display: flex; }
+        .btn:disabled { opacity: 0.5; pointer-events: none; }
+
+        .color-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .color-btn {
+            padding: 16px 12px;
+            border-radius: var(--radius);
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all var(--bounce);
+            letter-spacing: 0.02em;
+            font-family: var(--font-sans);
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .color-btn:active { transform: scale(0.93); }
+        .color-btn.correct-flash {
+            border-color: #fff !important;
+            box-shadow: 0 0 0 6px rgba(107, 155, 111, 0.5) !important;
+            animation: popIn 0.3s var(--bounce);
+            background: var(--success) !important;
+        }
+        .color-btn.wrong-flash {
+            animation: shake 0.5s ease;
+            border-color: #fff !important;
+            box-shadow: 0 0 0 6px rgba(199, 91, 91, 0.5) !important;
+        }
+        .color-btn-red { background: #d9534f; }
+        .color-btn-blue { background: #4a90c4; }
+        .color-btn-green { background: #5a9e6f; }
+        .color-btn-yellow { background: #d4a030; color: #3d2e0a; text-shadow: 0 1px 1px rgba(255,255,255,0.3); }
+
+        .stroop-word {
+            font-size: 4rem;
+            font-weight: 900;
+            text-align: center;
+            letter-spacing: 0.04em;
+            transition: all 0.15s ease;
+            line-height: 1.2;
+            padding: 10px 0;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-all;
+        }
+
+        .digit-display {
+            font-size: 3rem;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: 0.15em;
+            padding: 20px 10px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            transition: all 0.2s ease;
+            font-variant-numeric: tabular-nums;
+            font-family: 'SF Mono', 'Cascadia Code', 'Consolas', 'Menlo', 'PingFang SC', monospace;
+        }
+        .digit-display.hidden-digits {
+            letter-spacing: 0.3em;
+            color: #ccc;
+            font-size: 2.5rem;
+        }
+
+        .progress-wrap { margin-bottom: 16px; }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e8e3da;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #a3c4d9, #5b7b94);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .input-group { margin: 12px 0; }
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1.3rem;
+            border-radius: var(--radius-sm);
+            border: 2px solid #e0dbd2;
+            font-family: 'SF Mono', 'Cascadia Code', 'Consolas', 'Menlo', 'PingFang SC', monospace;
+            letter-spacing: 0.12em;
+            transition: all var(--transition);
+            text-align: center;
+            background: #fafaf8;
+            color: var(--text);
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(91, 123, 148, 0.1);
+            background: #fff;
+        }
+
+        .feedback-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            animation: popIn 0.35s var(--bounce);
+        }
+        .feedback-correct { background: #e8f5e9; color: #3d6b40; }
+        .feedback-wrong { background: #fdecea; color: #a84040; }
+
+        .score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border: 5px solid #e8e3da;
+            position: relative;
+            animation: scoreCountUp 0.7s var(--bounce);
+            box-shadow: var(--shadow-md);
+        }
+        .score-circle.excellent { border-color: #6b9b6f; background: #f6faf7; }
+        .score-circle.good { border-color: #8aafc8; background: #f6f9fb; }
+        .score-circle.fair { border-color: #d4a030; background: #fdfaf4; }
+        .score-circle.poor { border-color: #c75b5b; background: #fdf7f7; }
+        .score-number {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--text);
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+        .score-label { font-size: 0.85rem; color: var(--text-light); font-weight: 500; }
+        .result-evaluation {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 8px 0 4px;
+            color: var(--text);
+        }
+        .result-detail {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: #fafaf8;
+            border-radius: var(--radius-sm);
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        .stat-label { color: var(--text-light); font-weight: 500; }
+        .stat-value { font-weight: 700; color: var(--text); }
+        .disclaimer {
+            font-size: 0.73rem;
+            color: #aaa;
+            text-align: center;
+            margin-top: 14px;
+            line-height: 1.5;
+            padding: 0 8px;
+        }
+        .divider { border: none; border-top: 1px solid #e8e3da; margin: 16px 0; }
+
+        @media (max-width: 400px) {
+            .card { padding: 20px 14px 18px; border-radius: var(--radius-lg); }
+            .stroop-word { font-size: 3rem; min-height: 70px; }
+            .digit-display { font-size: 2.2rem; }
+            .color-buttons { gap: 8px; }
+            .color-btn { padding: 14px 8px; font-size: 0.95rem; min-height: 48px; }
+            .score-circle { width: 110px; height: 110px; }
+            .score-number { font-size: 2.4rem; }
+            .title { font-size: 1.3rem; }
+            .btn-lg { padding: 13px 24px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="card">
+
+            <!-- 屏幕1：欢迎页 -->
+            <div class="screen active" id="screen-welcome">
+                <div class="header-icon">🧠</div>
+                <h1 class="title">前额叶功能快速测试</h1>
+                <p class="subtitle">
+                    通过两个简单的认知任务，<br>评估您的<strong>抑制控制</strong>与<strong>工作记忆</strong>能力。
+                </p>
+                <div style="text-align:center;margin-bottom:16px;">
+                    <div style="display:inline-flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:0.82rem;color:var(--text-light);">
+                        <span style="background:#f0f4f7;padding:6px 12px;border-radius:20px;">📋 斯特鲁普测试 ×10</span>
+                        <span style="background:#fdf6ef;padding:6px 12px;border-radius:20px;">🔢 数字倒背 ×5</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-lg btn-block" onclick="startTest()">
+                    开始测试 →
+                </button>
+                <p class="disclaimer" style="margin-top:12px;">
+                    ⚠️ 本测试仅供娱乐参考，不构成医学诊断。
+                </p>
+            </div>
+
+            <!-- 屏幕2：Stroop测试 -->
+            <div class="screen" id="screen-stroop">
+                <div class="progress-wrap">
+                    <div class="progress-info">
+                        <span>📋 斯特鲁普测试</span>
+                        <span id="stroop-progress-text">1 / 10</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="stroop-progress-fill" style="width:0%;"></div>
+                    </div>
+                </div>
+                <p style="text-align:center;font-size:0.85rem;color:var(--text-light);margin-bottom:4px;">
+                    请选择<strong>文字的颜色</strong>（忽略字义）
+                </p>
+                <div class="stroop-word" id="stroop-word-display">红</div>
+                <div class="color-buttons" id="color-buttons-container">
+                    <button class="color-btn color-btn-red" onclick="stroopAnswer('红')">🔴 红色</button>
+                    <button class="color-btn color-btn-blue" onclick="stroopAnswer('蓝')">🔵 蓝色</button>
+                    <button class="color-btn color-btn-green" onclick="stroopAnswer('绿')">🟢 绿色</button>
+                    <button class="color-btn color-btn-yellow" onclick="stroopAnswer('黄')">🟡 黄色</button>
+                </div>
+                <div style="text-align:center;margin-top:10px;min-height:32px;" id="stroop-feedback"></div>
+            </div>
+
+            <!-- 屏幕3：数字倒背测试 -->
+            <div class="screen" id="screen-digit">
+                <div class="progress-wrap">
+                    <div class="progress-info">
+                        <span>🔢 数字倒背测试</span>
+                        <span id="digit-progress-text">1 / 5</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="digit-progress-fill" style="width:0%;"></div>
+                    </div>
+                </div>
+                <p style="text-align:center;font-size:0.85rem;color:var(--text-light);margin-bottom:4px;" id="digit-instruction">
+                    记住下方数字，消失后<strong>倒序输入</strong>
+                </p>
+                <div class="digit-display" id="digit-display-area">--</div>
+                <div id="digit-input-area" style="display:none;">
+                    <div class="input-group">
+                        <input type="text" id="digit-input" inputmode="numeric" autocomplete="off" placeholder="倒序输入数字" maxlength="10">
+                    </div>
+                    <button class="btn btn-primary btn-block" id="digit-submit-btn" onclick="submitDigitAnswer()">
+                        确认提交 ✓
+                    </button>
+                </div>
+                <div style="text-align:center;margin-top:10px;min-height:32px;" id="digit-feedback"></div>
+                <div style="text-align:center;margin-top:4px;font-size:0.78rem;color:var(--text-light);" id="digit-timer-hint"></div>
+            </div>
+
+            <!-- 屏幕4：结果页 -->
+            <div class="screen" id="screen-result">
+                <div style="text-align:center;">
+                    <div class="score-circle" id="score-circle">
+                        <span class="score-number" id="final-score">--</span>
+                        <span class="score-label">总分 / 100</span>
+                    </div>
+                    <div class="result-evaluation" id="result-evaluation">--</div>
+                    <div class="result-detail" id="result-detail">--</div>
+                </div>
+                <hr class="divider">
+                <div class="stat-row">
+                    <span class="stat-label">📋 斯特鲁普测试</span>
+                    <span class="stat-value" id="stat-stroop">--</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🔢 数字倒背测试</span>
+                    <span class="stat-value" id="stat-digit">--</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🎯 数字倒背最高位数</span>
+                    <span class="stat-value" id="stat-max-digits">--</span>
+                </div>
+                <button class="btn btn-outline btn-block" style="margin-top:16px;" onclick="restartTest()">
+                    🔄 重新测试
+                </button>
+                <p class="disclaimer">
+                    ⚠️ 免责声明：本测试为娱乐性认知小游戏，结果仅供参考，<br>不构成任何医学诊断或临床评估依据。<br>如有认知健康方面的疑虑，请咨询专业医生。
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            stroopQuestions: [],
+            stroopCurrentIndex: 0,
+            stroopScore: 0,
+            stroopTotal: 10,
+            stroopAnswered: false,
+            digitQuestions: [],
+            digitCurrentIndex: 0,
+            digitScore: 0,
+            digitTotal: 5,
+            digitMaxCorrectDigits: 0,
+            digitShowing: false,
+            digitTimerId: null,
+            digitDisplayTimeoutId: null,
+            digitAnswered: false,
+        };
+
+        const COLOR_MAP = {
+            '红': { css: '#d9534f', name: '红' },
+            '蓝': { css: '#4a90c4', name: '蓝' },
+            '绿': { css: '#5a9e6f', name: '绿' },
+            '黄': { css: '#d4a030', name: '黄' },
+        };
+        const COLOR_NAMES = ['红', '蓝', '绿', '黄'];
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(screenId);
+            if (target) {
+                target.classList.add('active');
+                target.style.animation = 'none';
+                target.offsetHeight;
+                target.style.animation = 'fadeSlideIn 0.4s ease';
+            }
+        }
+
+        function startTest() {
+            state.stroopQuestions = [];
+            for (let i = 0; i < state.stroopTotal; i++) {
+                const word = COLOR_NAMES[Math.floor(Math.random() * 4)];
+                let color;
+                if (Math.random() < 0.55) {
+                    const otherColors = COLOR_NAMES.filter(c => c !== word);
+                    color = otherColors[Math.floor(Math.random() * 3)];
+                } else {
+                    color = word;
+                }
+                state.stroopQuestions.push({ word, color });
+            }
+            state.stroopCurrentIndex = 0;
+            state.stroopScore = 0;
+            state.stroopAnswered = false;
+
+            state.digitQuestions = [];
+            const digitLengths = [3, 4, 5, 6, 7];
+            for (let i = 0; i < state.digitTotal; i++) {
+                const len = digitLengths[i];
+                let digits = '';
+                for (let j = 0; j < len; j++) {
+                    digits += Math.floor(Math.random() * 10).toString();
+                }
+                state.digitQuestions.push({ digits, length: len });
+            }
+            state.digitCurrentIndex = 0;
+            state.digitScore = 0;
+            state.digitMaxCorrectDigits = 0;
+            state.digitShowing = false;
+            state.digitAnswered = false;
+
+            showScreen('screen-stroop');
+            renderStroopQuestion();
+        }
+
+        function restartTest() {
+            if (state.digitTimerId) clearInterval(state.digitTimerId);
+            if (state.digitDisplayTimeoutId) clearTimeout(state.digitDisplayTimeoutId);
+            state.digitTimerId = null;
+            state.digitDisplayTimeoutId = null;
+            state.digitShowing = false;
+            state.digitAnswered = false;
+            state.stroopAnswered = false;
+            showScreen('screen-welcome');
+        }
+
+        function renderStroopQuestion() {
+            if (state.stroopCurrentIndex >= state.stroopTotal) {
+                startDigitTest();
+                return;
+            }
+            state.stroopAnswered = false;
+            const q = state.stroopQuestions[state.stroopCurrentIndex];
+            const wordDisplay = document.getElementById('stroop-word-display');
+            wordDisplay.textContent = q.word;
+            wordDisplay.style.color = COLOR_MAP[q.color].css;
+            wordDisplay.style.animation = 'none';
+            wordDisplay.offsetHeight;
+            wordDisplay.style.animation = 'popIn 0.35s var(--bounce)';
+
+            document.getElementById('stroop-progress-text').textContent = `${state.stroopCurrentIndex + 1} / ${state.stroopTotal}`;
+            document.getElementById('stroop-progress-fill').style.width = `${(state.stroopCurrentIndex / state.stroopTotal) * 100}%`;
+            document.getElementById('stroop-feedback').innerHTML = '';
+
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('correct-flash', 'wrong-flash');
+                btn.disabled = false;
+                btn.style.pointerEvents = 'auto';
+                btn.style.opacity = '1';
+            });
+        }
+
+        function stroopAnswer(userColor) {
+            if (state.stroopAnswered) return;
+            state.stroopAnswered = true;
+            const q = state.stroopQuestions[state.stroopCurrentIndex];
+            const correctColor = q.color;
+            const isCorrect = (userColor === correctColor);
+
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.style.pointerEvents = 'none';
+            });
+
+            const allColorBtns = document.querySelectorAll('.color-btn');
+            allColorBtns.forEach(btn => {
+                const btnColor = btn.textContent.replace(/[🔴🔵🟢🟡]\s*/, '').trim();
+                if (btnColor === correctColor) btn.classList.add('correct-flash');
+                if (btnColor === userColor && !isCorrect) {
+                    btn.classList.add('wrong-flash');
+                    btn.style.opacity = '0.7';
+                }
+            });
+
+            if (isCorrect) {
+                state.stroopScore += 5;
+                document.getElementById('stroop-feedback').innerHTML = '<span class="feedback-tag feedback-correct">✓ 正确！+5分</span>';
+            } else {
+                document.getElementById('stroop-feedback').innerHTML = `<span class="feedback-tag feedback-wrong">✗ 错误！字的颜色是"${correctColor}"</span>`;
+            }
+
+            const progressPercent = ((state.stroopCurrentIndex + 1) / state.stroopTotal) * 100;
+            document.getElementById('stroop-progress-fill').style.width = `${progressPercent}%`;
+
+            setTimeout(() => {
+                state.stroopCurrentIndex++;
+                renderStroopQuestion();
+            }, 900);
+        }
+
+        function startDigitTest() {
+            state.digitCurrentIndex = 0;
+            state.digitScore = 0;
+            state.digitMaxCorrectDigits = 0;
+            showScreen('screen-digit');
+            renderDigitQuestion();
+        }
+
+        function renderDigitQuestion() {
+            if (state.digitCurrentIndex >= state.digitTotal) {
+                showResults();
+                return;
+            }
+            state.digitAnswered = false;
+            state.digitShowing = true;
+            const q = state.digitQuestions[state.digitCurrentIndex];
+
+            document.getElementById('digit-progress-text').textContent = `${state.digitCurrentIndex + 1} / ${state.digitTotal}`;
+            document.getElementById('digit-progress-fill').style.width = `${(state.digitCurrentIndex / state.digitTotal) * 100}%`;
+
+            const displayArea = document.getElementById('digit-display-area');
+            displayArea.textContent = q.digits;
+            displayArea.classList.remove('hidden-digits');
+            displayArea.style.animation = 'none';
+            displayArea.offsetHeight;
+            displayArea.style.animation = 'popIn 0.4s var(--bounce)';
+
+            document.getElementById('digit-input-area').style.display = 'none';
+            document.getElementById('digit-feedback').innerHTML = '';
+            document.getElementById('digit-instruction').textContent = `记住下方数字（${q.length}位），消失后倒序输入`;
+
+            const displaySeconds = q.length;
+            const timerHint = document.getElementById('digit-timer-hint');
+            let remaining = displaySeconds;
+            timerHint.textContent = `⏱ 数字将在 ${remaining} 秒后消失...`;
+
+            if (state.digitTimerId) clearInterval(state.digitTimerId);
+            state.digitTimerId = setInterval(() => {
+                remaining--;
+                if (remaining > 0) {
+                    timerHint.textContent = `⏱ 数字将在 ${remaining} 秒后消失...`;
+                } else {
+                    timerHint.textContent = '';
+                    clearInterval(state.digitTimerId);
+                    state.digitTimerId = null;
+                }
+            }, 1000);
+
+            if (state.digitDisplayTimeoutId) clearTimeout(state.digitDisplayTimeoutId);
+            state.digitDisplayTimeoutId = setTimeout(() => {
+                hideDigitsAndShowInput(q);
+            }, displaySeconds * 1000);
+        }
+
+        function hideDigitsAndShowInput(q) {
+            state.digitShowing = false;
+            if (state.digitTimerId) {
+                clearInterval(state.digitTimerId);
+                state.digitTimerId = null;
+            }
+            document.getElementById('digit-timer-hint').textContent = '';
+            const displayArea = document.getElementById('digit-display-area');
+            displayArea.textContent = '? ? ?';
+            displayArea.classList.add('hidden-digits');
+            displayArea.style.animation = 'none';
+            displayArea.offsetHeight;
+            displayArea.style.animation = 'fadeSlideIn 0.3s ease';
+
+            const inputArea = document.getElementById('digit-input-area');
+            inputArea.style.display = 'block';
+            inputArea.style.animation = 'none';
+            inputArea.offsetHeight;
+            inputArea.style.animation = 'fadeSlideIn 0.35s ease';
+            document.getElementById('digit-input').value = '';
+            document.getElementById('digit-input').focus();
+            document.getElementById('digit-instruction').textContent = `请倒序输入刚才的${q.length}位数字`;
+        }
+
+        function submitDigitAnswer() {
+            if (state.digitAnswered || state.digitShowing) return;
+            const q = state.digitQuestions[state.digitCurrentIndex];
+            const userInput = document.getElementById('digit-input').value.trim().replace(/\s/g, '');
+            const correctReversed = q.digits.split('').reverse().join('');
+
+            if (userInput === '') {
+                document.getElementById('digit-feedback').innerHTML = '<span class="feedback-tag feedback-wrong">请输入数字</span>';
+                document.getElementById('digit-input').focus();
+                return;
+            }
+
+            state.digitAnswered = true;
+            const isCorrect = (userInput === correctReversed);
+
+            if (isCorrect) {
+                state.digitScore += 10;
+                if (q.length > state.digitMaxCorrectDigits) {
+                    state.digitMaxCorrectDigits = q.length;
+                }
+                document.getElementById('digit-feedback').innerHTML = '<span class="feedback-tag feedback-correct">✓ 完全正确！+10分</span>';
+            } else {
+                document.getElementById('digit-feedback').innerHTML = `<span class="feedback-tag feedback-wrong">✗ 错误！正确倒序：${correctReversed}</span>`;
+            }
+
+            const progressPercent = ((state.digitCurrentIndex + 1) / state.digitTotal) * 100;
+            document.getElementById('digit-progress-fill').style.width = `${progressPercent}%`;
+
+            document.getElementById('digit-input').disabled = true;
+            document.getElementById('digit-submit-btn').disabled = true;
+
+            setTimeout(() => {
+                document.getElementById('digit-input').disabled = false;
+                document.getElementById('digit-submit-btn').disabled = false;
+                state.digitCurrentIndex++;
+                renderDigitQuestion();
+            }, 1200);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const digitInput = document.getElementById('digit-input');
+            if (digitInput) {
+                digitInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !state.digitAnswered && !state.digitShowing) {
+                        e.preventDefault();
+                        submitDigitAnswer();
+                    }
+                });
+            }
+        });
+
+        function showResults() {
+            if (state.digitTimerId) clearInterval(state.digitTimerId);
+            if (state.digitDisplayTimeoutId) clearTimeout(state.digitDisplayTimeoutId);
+            state.digitTimerId = null;
+            state.digitDisplayTimeoutId = null;
+
+            const totalScore = state.stroopScore + state.digitScore;
+            showScreen('screen-result');
+
+            const scoreCircle = document.getElementById('score-circle');
+            scoreCircle.className = 'score-circle';
+            const finalScoreEl = document.getElementById('final-score');
+            finalScoreEl.textContent = '--';
+
+            let evaluation = '', detail = '', circleClass = '';
+            if (totalScore >= 85) {
+                evaluation = '🌟 前额叶功能表现优秀';
+                detail = '抑制控制与工作记忆能力均处于较高水平，\n认知灵活性出色。';
+                circleClass = 'excellent';
+            } else if (totalScore >= 65) {
+                evaluation = '👍 前额叶功能表现良好';
+                detail = '认知能力在正常范围内，\n具备较好的抑制控制与工作记忆。';
+                circleClass = 'good';
+            } else if (totalScore >= 45) {
+                evaluation = '📊 前额叶功能表现一般';
+                detail = '部分认知任务存在一定困难，\n可通过脑力训练加以改善。';
+                circleClass = 'fair';
+            } else if (totalScore >= 25) {
+                evaluation = '🔍 前额叶功能有待提升';
+                detail = '抑制控制或工作记忆方面表现较弱，\n建议多进行相关认知训练。';
+                circleClass = 'poor';
+            } else {
+                evaluation = '⚠️ 建议关注认知健康';
+                detail = '测试结果偏低，可能受到疲劳、分心等因素影响，\n建议休息后重测或咨询专业医生。';
+                circleClass = 'poor';
+            }
+
+            setTimeout(() => {
+                finalScoreEl.textContent = totalScore;
+                scoreCircle.classList.add(circleClass);
+                document.getElementById('result-evaluation').textContent = evaluation;
+                document.getElementById('result-detail').textContent = detail;
+                document.getElementById('stat-stroop').textContent = `${state.stroopScore} / 50 分`;
+                document.getElementById('stat-digit').textContent = `${state.digitScore} / 50 分`;
+                document.getElementById('stat-max-digits').textContent = state.digitMaxCorrectDigits > 0 ? `${state.digitMaxCorrectDigits} 位数` : '未通过';
+            }, 350);
+
+            document.getElementById('result-evaluation').textContent = '';
+            document.getElementById('result-detail').textContent = '';
+            document.getElementById('stat-stroop').textContent = '--';
+            document.getElementById('stat-digit').textContent = '--';
+            document.getElementById('stat-max-digits').textContent = '--';
+        }
+    </script>
+</body>
+</html>
